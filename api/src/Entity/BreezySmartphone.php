@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
@@ -17,8 +16,6 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\BreezySmartphoneRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: BreezySmartphoneRepository::class)]
 #[ORM\Table(name: 'breezy_smartphones')]
@@ -54,19 +51,35 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 ], arguments: ['orderParameterName' => 'order'])]
 class BreezySmartphone
 {
-    use TimestampableEntity;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'datetime')]
-    #[Gedmo\Timestampable(on: 'create')]
+    #[ORM\Column(
+        name: 'created_at',
+        type: 'datetime_immutable',        
+        nullable: false,
+        options: [
+            'default'  => 'CURRENT_TIMESTAMP',
+        ],
+        insertable: false,                
+        updatable:  false,
+        generated:  'ALWAYS'             
+    )]
     protected $createdAt;
 
-    #[ORM\Column(type: 'datetime')]
-    #[Gedmo\Timestampable(on: 'update')]
+    #[ORM\Column(
+        name: 'updated_at',   
+        nullable: false,
+        options: [
+            'default'  => 'CURRENT_TIMESTAMP',
+            'onUpdate' => 'CURRENT_TIMESTAMP',
+        ],
+        insertable: false,                 
+        updatable:  false,
+        generated:  'ALWAYS'         
+    )]
     protected $updatedAt;
 
     public function __construct(

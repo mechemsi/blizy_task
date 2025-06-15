@@ -15,6 +15,8 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\BreezySmartphoneRepository;
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BreezySmartphoneRepository::class)]
@@ -67,7 +69,7 @@ class BreezySmartphone
         updatable:  false,
         generated:  'ALWAYS'             
     )]
-    protected $createdAt;
+    protected DateTimeImmutable $createdAt;
 
     #[ORM\Column(
         name: 'updated_at',   
@@ -80,7 +82,7 @@ class BreezySmartphone
         updatable:  false,
         generated:  'ALWAYS'         
     )]
-    protected $updatedAt;
+    protected DateTimeImmutable $updatedAt;
 
     public function __construct(
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -115,15 +117,5 @@ class BreezySmartphone
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
     }
 }

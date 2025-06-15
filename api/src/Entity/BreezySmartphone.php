@@ -17,9 +17,12 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\BreezySmartphoneRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: BreezySmartphoneRepository::class)]
 #[ORM\Table(name: 'breezy_smartphones')]
+#[ORM\HasLifecycleCallbacks]
 #[ApiResource(
     operations: [
         new GetCollection(),
@@ -51,13 +54,20 @@ use Doctrine\ORM\Mapping as ORM;
 ], arguments: ['orderParameterName' => 'order'])]
 class BreezySmartphone
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'datetime', default: 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP')]
-    public readonly ?\DateTimeInterface $updatedAt;
+    #[ORM\Column(type: 'datetime')]
+    #[Gedmo\Timestampable(on: 'create')]
+    protected $createdAt;
+
+    #[ORM\Column(type: 'datetime')]
+    #[Gedmo\Timestampable(on: 'update')]
+    protected $updatedAt;
 
     public function __construct(
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -92,5 +102,15 @@ class BreezySmartphone
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
     }
 }

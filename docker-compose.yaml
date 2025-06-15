@@ -82,7 +82,6 @@ services:
         build:
             context: ./web
             dockerfile: ../docker/web/Dockerfile
-            no_cache: true
         container_name: ${COMPOSE_PROJECT_NAME}-web
         environment:
             API_BASE_URL: http://nginx/api

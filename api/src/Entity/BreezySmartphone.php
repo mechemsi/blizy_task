@@ -72,7 +72,8 @@ class BreezySmartphone
     protected DateTimeImmutable $createdAt;
 
     #[ORM\Column(
-        name: 'updated_at',   
+        name: 'updated_at',
+        type: 'datetime_immutable',   
         nullable: false,
         options: [
             'default'  => 'CURRENT_TIMESTAMP',

@@ -38,7 +38,6 @@ class DatabaseManager {
                 image_url VARCHAR(500),
                 availability VARCHAR(50),
                 product_code VARCHAR(100),
-                scraped_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 UNIQUE KEY unique_product (brand, model, grade, storage, color, product_code),
                 INDEX idx_product_code (product_code),

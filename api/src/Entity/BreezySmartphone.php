@@ -56,10 +56,7 @@ class BreezySmartphone
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'datetime')]
-    public readonly ?\DateTimeInterface $scrapedAt;
-
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: 'datetime', default: 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP')]
     public readonly ?\DateTimeInterface $updatedAt;
 
     public function __construct(
@@ -95,27 +92,5 @@ class BreezySmartphone
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'category' => $this->category,
-            'brand' => $this->brand,
-            'model' => $this->model,
-            'grade' => $this->grade,
-            'storage' => $this->storage,
-            'color' => $this->color,
-            'conditionDescription' => $this->conditionDescription,
-            'price' => $this->price,
-            'currency' => $this->currency,
-            'url' => $this->url,
-            'imageUrl' => $this->imageUrl,
-            'availability' => $this->availability,
-            'productCode' => $this->productCode,
-            'scrapedAt' => $this->scrapedAt?->format('Y-m-d H:i:s'),
-            'updatedAt' => $this->updatedAt?->format('Y-m-d H:i:s'),
-        ];
     }
 }

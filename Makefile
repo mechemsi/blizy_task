@@ -16,7 +16,7 @@ ERROR_ONLY_FOR_HOST = @printf "\033[33mThis command for host machine\033[39m\n"
 
 install:
 	@make build
-	docker-compose start mysql symfony
+	docker-compose up -d nginx mysql symfony
 	@make composer-install
 	@make exec-bash cmd="php bin/console doctrine:database:create --if-not-exists"
 	@make exec-bash cmd="php bin/console doctrine:schema:update --force"

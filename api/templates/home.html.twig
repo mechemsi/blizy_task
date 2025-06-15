@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home - {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="hero-section bg-primary text-white py-5 rounded mb-5">
+    <div class="text-center">
+        <h1 class="display-4 mb-3">
+            <i class="fas fa-mobile-alt me-3"></i>Blizy Scraper
+        </h1>
+        <p class="lead mb-4">Automated smartphone data collection from Breezy.pl</p>
+        <a href="{{ path('smartphones') }}" class="btn btn-light btn-lg">
+            <i class="fas fa-search me-2"></i>View Scraped Data
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-robot fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Automated Scraping</h5>
+                <p class="card-text">Continuous monitoring of Breezy.pl smartphone listings with configurable intervals.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-database fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Structured Data</h5>
+                <p class="card-text">Normalized data extraction including brand, model, grade, storage, condition, and pricing.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-api fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">REST API</h5>
+                <p class="card-text">Full API access with filtering, pagination, and statistics endpoints.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-6">
+        <h3><i class="fas fa-info-circle me-2"></i>Features</h3>
+        <ul class="list-unstyled">
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Playwright-powered web scraping</li>
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Docker containerized architecture</li>
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>MySQL data persistence</li>
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Duplicate detection and handling</li>
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Scheduled execution support</li>
+        </ul>
+    </div>
+    
+    <div class="col-md-6">
+        <h3><i class="fas fa-cogs me-2"></i>API Endpoints</h3>
+        <div class="list-group">
+            <a href="/api/smartphones" class="list-group-item list-group-item-action">
+                <strong>GET /api/smartphones</strong><br>
+                <small class="text-muted">List all smartphones with filtering and pagination</small>
+            </a>
+            <a href="/api/smartphones/stats" class="list-group-item list-group-item-action">
+                <strong>GET /api/smartphones/stats</strong><br>
+                <small class="text-muted">Statistics and analytics</small>
+            </a>
+            <a href="/api/smartphones/brands" class="list-group-item list-group-item-action">
+                <strong>GET /api/smartphones/brands</strong><br>
+                <small class="text-muted">Available brands list</small>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

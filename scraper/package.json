@@ -1,0 +1,26 @@
+{
+  "name": "breezy-scraper",
+  "version": "1.0.0",
+  "description": "Playwright scraper for Breezy smartphone data",
+  "main": "src/scraper.js",
+  "scripts": {
+    "start": "node src/scraper.js",
+    "scheduler": "node src/scheduler.js",
+    "install-browsers": "npx playwright install chromium --with-deps",
+    "dev": "nodemon src/scraper.js"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.40.0",
+    "playwright": "^1.40.0",
+    "mysql2": "^3.6.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "author": "",
+  "license": "MIT"
+}

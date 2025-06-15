@@ -1,0 +1,105 @@
+services:
+
+    nginx:
+        image: ${COMPOSE_PROJECT_NAME}-nginx:latest
+        build:
+            context: ./docker/
+            args:
+                BUILD_ARGUMENT_ENV: dev
+            dockerfile: ./nginx/Dockerfile
+        container_name: ${COMPOSE_PROJECT_NAME}-nginx
+        restart: always
+        ports:
+            - "${WEB_PORT_HTTP}:80"
+            - "${WEB_PORT_SSL}:443"
+        volumes:
+            - ./api:/var/www/html:ro,cached
+        depends_on:
+            - symfony
+        networks:
+            - internal
+
+    symfony: &symfony-template
+        image: ${COMPOSE_PROJECT_NAME}-symfony:latest
+        build:
+            context: .
+            args:
+                BUILD_ARGUMENT_ENV: dev
+                HOST_UID: ${HOST_UID}
+                HOST_GID: ${HOST_GID}
+                XDEBUG_CONFIG: ${XDEBUG_CONFIG}
+                XDEBUG_VERSION: ${XDEBUG_VERSION}
+            dockerfile: ./docker/php/Dockerfile
+        container_name: ${COMPOSE_PROJECT_NAME}-symfony
+        volumes:
+            - ./api:/var/www/html:cached
+        depends_on:
+            - mysql
+        networks:
+            - internal
+
+    mysql:
+        image: mariadb:${MYSQL_VERSION}
+        platform: linux/x86_64
+        container_name: ${COMPOSE_PROJECT_NAME}-mysql
+        command: --innodb-use-native-aio=${INNODB_USE_NATIVE_AIO:-1} --sql_mode=${SQL_MODE:-"STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"} --innodb-buffer-pool-size=128M
+        environment:
+            MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MARIADB_DATABASE: symfony
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: symfony
+        ports:
+            - "${MYSQL_PORT}:3306"
+        volumes:
+            - ./var/mariadb-data:/var/lib/mysql:delegated
+            - ./docker/dev/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+        networks:
+            - internal
+
+    scraper:
+        build:
+            context: ./scraper
+            dockerfile: ../docker/scraper/Dockerfile
+        container_name: ${COMPOSE_PROJECT_NAME}-scraper
+        environment:
+            MYSQL_HOST: mysql
+            MYSQL_USER: root
+            MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: symfony
+            SCRAPER_INTERVAL: ${SCRAPER_INTERVAL:-3600000}
+            SCRAPER_MAX_PAGES: ${SCRAPER_MAX_PAGES:-5}
+            SCRAPER_DELAY: ${SCRAPER_DELAY:-2000}
+        depends_on:
+            - mysql
+        networks:
+            - internal
+        restart: unless-stopped
+
+        command: ["sh", "-c", "echo 'Waiting 10 seconds for database to be ready...' && sleep 10 && node src/scheduler.js"]
+
+    web:
+        image: ${COMPOSE_PROJECT_NAME}-web:latest
+        build:
+            context: ./web
+            dockerfile: ../docker/web/Dockerfile
+            no_cache: true
+        container_name: ${COMPOSE_PROJECT_NAME}-web
+        environment:
+            API_BASE_URL: http://nginx/api
+            NUXT_PUBLIC_API_BASE_URL: http://localhost:${WEB_PORT_HTTP}/api
+        ports:
+            - "${WEB_FRONTEND_PORT:-3000}:3000"
+        volumes:
+            # Mount source code for hot reloading in development
+            - ./web:/app
+            # Exclude node_modules to avoid performance issues
+            - /app/node_modules
+        depends_on:
+            - nginx
+        networks:
+            - internal
+        restart: unless-stopped
+
+networks:
+    internal:
+        name: internal

@@ -1,0 +1,71 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    locale: 'en'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        #bind:
+    _instanceof:
+        Symfony\Component\EventDispatcher\EventSubscriberInterface:
+            tags: [ 'app.stopwatch' ]
+        Symfony\Component\HttpKernel\Controller\ValueResolverInterface:
+            tags: [ 'app.stopwatch' ]
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    
+    app.serializer.normalizer.object.external_message:
+        class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+        autoconfigure: false
+        arguments:
+            $nameConverter: '@serializer.name_converter.camel_case_to_snake_case'
+
+    app.serializer.denormalizer.array.external_message:
+        class: Symfony\Component\Serializer\Normalizer\ArrayDenormalizer
+        autoconfigure: false
+
+    app.serializer.normalizer.date_time.external_message:
+        class: Symfony\Component\Serializer\Normalizer\DateTimeNormalizer
+        autoconfigure: false
+        arguments:
+            - { datetime_format: 'Y-m-d H:i:s' }
+
+    app.serializer.encoder.json.external_message:
+        class: Symfony\Component\Serializer\Encoder\JsonEncoder
+        autoconfigure: false
+
+    app.serializer.external_message:
+        class: Symfony\Component\Serializer\Serializer
+        autoconfigure: false
+        arguments:
+            $normalizers:
+                - '@app.serializer.normalizer.date_time.external_message'
+                - '@app.serializer.normalizer.object.external_message'
+                - '@app.serializer.denormalizer.array.external_message'
+            $encoders:
+                - '@app.serializer.encoder.json.external_message'
+
+when@dev:
+    services:
+        _defaults:
+            autowire: true
+            autoconfigure: true
+
+        ProxyManager\Factory\AccessInterceptorValueHolderFactory:
+            class: ProxyManager\Factory\AccessInterceptorValueHolderFactory
